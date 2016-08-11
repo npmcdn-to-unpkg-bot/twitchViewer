@@ -39,6 +39,8 @@ h1 {
   margin: 2px 0px;
   padding: 5px;
   line-height: 50px;
+  white-space: nowrap;
+
 }
 
 .menu {
@@ -138,6 +140,7 @@ h1 {
   text-overflow: ellipsis;
   text-align: center;
 }
+
 
 @media (min-width: 768px) {
   .container {

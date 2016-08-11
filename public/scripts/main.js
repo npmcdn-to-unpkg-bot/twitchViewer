@@ -43,24 +43,38 @@ var ViewUser = React.createClass({
       success: function(data) {
         if(data.status !== 404){
           console.log(data);
-          if(data){
+          if(data.game === null){
+            this.setState({
+            streaming: false,
+            not_exists: false,
+            link:data.url,
+            game: "Offline",
+            img: (data.logo===null)?
+            'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/300px-No_image_available.svg.png'
+            :data.logo,
+            status: "offline"
+            });
+          }
+          else if(data === undefined){
+            this.setState({
+              streaming:false,
+              not_exists:true,
+              game: "Account Closed",
+              status: "offline"
+            });
+          }
+          else{
             this.setState({
               streaming: true,
               not_exists: false,
               link: data.url,
+              desciption: data.status,
+              game: data.game,
               display_name: data.display_name,
               img: (data.logo===null)?
               'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/300px-No_image_available.svg.png'
               :data.logo,
-              online: "online"
-            });
-          }
-          else {
-            //channel error
-            this.setState({
-              streaming: false,
-              error: true,
-              not_exists: true
+              status: "online"
             });
           }
         }
@@ -69,16 +83,19 @@ var ViewUser = React.createClass({
   },
   render: function(){
     var display_name = this.state.display_name||this.props.name;
-
     return(
         <div className="row">
-          <div className="col-xs-2" id="icon">
+          <div className="col-xs-2 col-sm-1" id="icon">
             <img src={this.state.img} className="logo" />
             </div>
             <div className="col-xs-10 col-sm-3" id="name">
               <a href={this.state.link} target="_blank">{display_name}</a>
             </div>
+            <div className="col-xs-10 col-sm-8" id="streaming">
+              {this.state.game} <span className="hidden-xs">{this.state.desciption}</span>
             </div>
+          </div>
+
 
 
     );
@@ -88,8 +105,9 @@ var ViewUser = React.createClass({
 var TwitchTv = React.createClass({
   getInitialState: function() {
     return {
+      filter_status: 'all',
+      filter_text: '',
       list_stream: this.props.people,
-      filter: 'all'
     };
   },
   onButtonClick: function(online) {
@@ -105,6 +123,7 @@ var TwitchTv = React.createClass({
 
       <div className="container">
       <h1><i className="fa fa-twitch"></i></h1>
+      <div id="display">
         {this.state.list_stream.map(
           function(result){
             return(
@@ -113,12 +132,13 @@ var TwitchTv = React.createClass({
         )
       }
 
+        </div>
+            <div className="add-user">
+               <AddUser
+                  onUserInput={this.addUserInput}
+              />
+          </div>
 
-        <div className="add-user">
-           <AddUser
-              onUserInput={this.addUserInput}
-          />
-      </div>
 
 
       </div>
